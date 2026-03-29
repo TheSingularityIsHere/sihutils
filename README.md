@@ -6,12 +6,10 @@ Utility helpers for SIH workflows.
 
 **Update to the latest commit:**
 ```python
-!pip install --upgrade "sihutils @ git+https://github.com/TheSingularityIsHere/sihutils.git"
-```
+!pip install --quiet --upgrade "sihutils @ git+https://github.com/TheSingularityIsHere/sihutils.git"
 
-**Update to the latest commit:**
-```bash
-uv add --upgrade "sihutils @ git+https://github.com/TheSingularityIsHere/sihutils.git"
+from etils.lazy_imports import *
+import sihutils
 ```
 
 > **Tip:** To pin to a specific commit or tag, append `@<ref>` to the URL, e.g.:
@@ -31,9 +29,7 @@ uv add --upgrade "sihutils @ git+https://github.com/TheSingularityIsHere/sihutil
 ## Synopsis
 
 ```python
-import sihutils
-
-rows = sihutils.monitoring.loop()
+if 'rows' not in globals(): rows = []
 rows = sihutils.monitoring.loop(rows)
 ```
 
