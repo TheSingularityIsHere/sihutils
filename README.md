@@ -7,6 +7,7 @@ Utility helpers for SIH workflows.
 **Update to the latest commit:**
 ```python
 !pip install --upgrade "sihutils @ git+https://github.com/TheSingularityIsHere/sihutils.git"
+```
 
 **Update to the latest commit:**
 ```bash
@@ -17,6 +18,15 @@ uv add --upgrade "sihutils @ git+https://github.com/TheSingularityIsHere/sihutil
 > ```
 > git+https://github.com/TheSingularityIsHere/sihutils.git@v0.1.0
 > ```
+
+> **Tip:** Edit files locally with hot-reloading:
+> ```
+> !ln -s $(dirname {sihutils.__file__}) /workspace/_sihutils
+> %load_ext autoreload
+> %autoreload 2
+> ```
+
+!ln -s $(dirname {sihutils.__file__}) /workspace/sihutils
 
 ## Synopsis
 
