@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "sihutils"
+version = "0.1.0"
+description = "Utility helpers for SIH workflows"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+dependencies = [
+    "pynvml",
+    "pandas",
+]
+
+[project.urls]
+Homepage = "https://github.com/TheSingularityIsHere/sihutils"
+Repository = "https://github.com/TheSingularityIsHere/sihutils"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sihutils*"]
