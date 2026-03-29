@@ -31,6 +31,8 @@ import sihutils
 ```python
 if 'rows' not in globals(): rows = []
 rows = sihutils.monitoring.loop(rows)
+
+sihutils.monitoring.export(rows)
 ```
 
 ---

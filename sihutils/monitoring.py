@@ -1,11 +1,17 @@
 import datetime
 import glob
+import json
+import os
+import subprocess
 import zoneinfo
 
 from IPython import display as disp
 from matplotlib import pyplot as plt
+import numy as np
 import pandas as pd
 import pynvml
+from scipy.ndimage import binary_closing
+
 
 def _plot(df):
   fig, ax1 = plt.subplots(figsize=(12, 6))
@@ -42,7 +48,6 @@ def _plot(df):
   plt.show()
 
 
-
 def _get_row():
   num_files = len(glob.glob('runpod-slim/ComfyUI/output/video/*.mp4'))
 
@@ -74,3 +79,76 @@ def loop(rows=()):
   except KeyboardInterrupt:
     pass
   return rows
+
+
+def _get_video_metadata(file_path):
+  stats = os.stat(file_path)
+  size_mb = stats.st_size / (1024 * 1024)
+  creation_time = datetime.datetime.fromtimestamp(stats.st_ctime).strftime('%Y-%m-%d %H:%M:%S')
+
+  cmd = [
+    'ffprobe', '-v', 'quiet', '-print_format', 'json',
+    '-show_streams', '-select_streams', 'v:0', file_path
+  ]
+  res = subprocess.check_output(cmd).decode('utf-8')
+  streams = json.loads(res).get('streams', [{}])[0]
+
+  return {
+    'file': os.path.basename(file_path),
+    'width': streams.get('width'),
+    'height': streams.get('height'),
+    'frames': int(streams.get('nb_frames', 0)),
+    'size_mb': round(size_mb, 2),
+    'created': creation_time
+  }
+
+
+
+def _get_on_times(rows, threshold=10, gap_tolerance=10):
+  df = pd.DataFrame(rows)
+  # Create binary mask of 'on' state
+  is_on = (df['gpu_util'] > threshold).values
+
+  # Fill gaps caused by oscillations (gap_tolerance is in samples)
+  is_on_clean = binary_closing(is_on, structure=np.ones(gap_tolerance))
+
+  # Find transitions
+  diff = np.diff(is_on_clean.astype(int))
+  starts = np.where(diff == 1)[0] + 1
+  ends = np.where(diff == -1)[0] + 1
+
+  # Handle edge cases (starts 'on' or ends 'on')
+  if is_on_clean[0]: starts = np.insert(starts, 0, 0)
+  if is_on_clean[-1]: ends = np.append(ends, len(df))
+
+  # Combine into intervals
+  blocks = []
+  for s, e in zip(starts, ends):
+    blocks.append({
+      'start_ts': df['ts'].iloc[s],
+      'end_ts': df['ts'].iloc[min(e, len(df)-1)],
+      'duration_sec': (df['ts'].iloc[min(e, len(df)-1)] - df['ts'].iloc[s]).total_seconds()
+    })
+  return pd.DataFrame(blocks)
+
+
+def export(rows):
+  df = pd.DataFrame(rows)
+  df['ts'] = df['ts'].dt.strftime('%Y-%m-%d %H:%M:%S')
+  mp4_paths = sorted(glob.glob('runpod-slim/ComfyUI/output/video/*.mp4'))
+  csv_text = '\n'.join((
+      df.to_csv(index=False),
+      _get_on_times(rows).to_csv(index=False),
+      pd.DataFrame([_get_video_metadata(f) for f in mp4_paths]).to_csv(index=False),
+  )).replace('\n', '\\n').replace("'", "\\'")
+  js_code = f"""
+  navigator.clipboard.writeText('{csv_text}').then(() => {{
+    console.log('CSV copied to local clipboard');
+  }});
+  """
+  disp.display(disp.Javascript(js_code))
+  print('1. Paste CSV and save as *public* Gist:')
+  print('https://gist.github.com/')
+  print()
+  print('2. Share link:')
+  print('https://figur.li/hitl/')

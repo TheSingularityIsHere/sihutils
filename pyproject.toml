@@ -9,6 +9,7 @@ description = "Utility helpers for SIH workflows"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.9"
+# (in addition to default jupyterlab dependencies)
 dependencies = [
     "pynvml",
     "pandas",
