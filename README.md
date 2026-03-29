@@ -18,6 +18,15 @@ uv add --upgrade "sihutils @ git+https://github.com/TheSingularityIsHere/sihutil
 > git+https://github.com/TheSingularityIsHere/sihutils.git@v0.1.0
 > ```
 
+## Synopsis
+
+```python
+import sihutils
+
+rows = sihutils.monitoring.loop()
+rows = sihutils.monitoring.loop(rows)
+```
+
 ---
 
 ## License
