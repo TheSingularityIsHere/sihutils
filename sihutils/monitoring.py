@@ -7,10 +7,14 @@ import zoneinfo
 
 from IPython import display as disp
 from matplotlib import pyplot as plt
-import numy as np
+import numpy as np
 import pandas as pd
 import pynvml
 from scipy.ndimage import binary_closing
+
+TZ = zoneinfo.ZoneInfo("Europe/Zurich")
+
+
 
 
 def _plot(df):
@@ -63,7 +67,7 @@ def _get_row():
     gpu_vram_used_mb=vram_used,
     gpu_util=util.gpu,
     gpu_temp=temp,
-    ts=datetime.datetime.now(zoneinfo.ZoneInfo("Europe/Zurich")),
+    ts=datetime.datetime.now(TZ),
   )
 
 
@@ -84,7 +88,7 @@ def loop(rows=()):
 def _get_video_metadata(file_path):
   stats = os.stat(file_path)
   size_mb = stats.st_size / (1024 * 1024)
-  creation_time = datetime.datetime.fromtimestamp(stats.st_ctime).strftime('%Y-%m-%d %H:%M:%S')
+  creation_time = datetime.datetime.fromtimestamp(stats.st_ctime, tz=TZ).strftime('%Y-%m-%d %H:%M:%S')
 
   cmd = [
     'ffprobe', '-v', 'quiet', '-print_format', 'json',
