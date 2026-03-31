@@ -16,6 +16,7 @@ dependencies = [
     "etils",
     "protobuf",
     "absl-py",
+    "comfy-cli",
 ]
 
 [project.urls]

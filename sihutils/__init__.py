@@ -3,4 +3,5 @@
 __version__ = "0.1.0"
 
 
+from . import comfy
 from . import monitoring
