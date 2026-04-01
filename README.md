@@ -6,10 +6,7 @@ Utility helpers for SIH workflows.
 
 **Update to the latest commit:**
 ```python
-!pip install --quiet --upgrade "sihutils @ git+https://github.com/TheSingularityIsHere/sihutils.git"
-
-from etils.lazy_imports import *
-import sihutils
+!pip install --upgrade "sihutils @ git+https://github.com/TheSingularityIsHere/sihutils.git"
 ```
 
 > **Tip:** To pin to a specific commit or tag, append `@<ref>` to the URL, e.g.:
@@ -29,10 +26,18 @@ import sihutils
 ## Synopsis
 
 ```python
-if 'rows' not in globals(): rows = []
-rows = sihutils.monitoring.loop(rows)
+from etils.lazy_imports import *
+import sihutils
 
+# monitor GPU 0
+if 'rows' not in globals(): rows = []
+rows = sihutils.monitoring.loop(rows, gpu_index=0)
 sihutils.monitoring.export(rows)
+
+# render a script
+sihutils.comfy.render_script(
+    script='20260331_205938.json',
+)
 ```
 
 ---
