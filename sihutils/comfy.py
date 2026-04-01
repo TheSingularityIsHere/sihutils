@@ -49,6 +49,7 @@ def render_script(
   env = {**os.environ}
   env["COMFYUI_PROMPT_ACK"] = "true"
 
+  name = 'prompts'
   if isinstance(script, str):
     name = os.path.splitext(os.path.basename(script))[0]
     script = json.load(open(script))
