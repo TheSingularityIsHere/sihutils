@@ -34,7 +34,8 @@ def _runcmd(cmd, env):
 
 def render_script(
   # https://github.com/TheSingularityIsHere/human-in-the-loop/blob/main/script_writer/script_writer.py
-  script_path='20260331_205938.json',
+  # - or simple list of strings
+  script: str | list[str],
   scene0=0,
   scene1=None,
   dest='/workspace/runpod-slim/ComfyUI/output/video'
@@ -43,14 +44,20 @@ def render_script(
   env = {**os.environ}
   env["COMFYUI_PROMPT_ACK"] = "true"
 
-  name = os.path.splitext(os.path.basename(script_path))[0]
-  script = json.load(open(script_path))
+  if isinstance(script, str):
+    name = os.path.splitext(os.path.basename(script))[0]
+    script = json.load(open(script))
+    if 'scenes' in script:
+      script = [scene['writer']['text'] for scene in script['scenes']]
+  assert isinstance(script, (list, tuple)) and all(isinstance(p, str) for p in script)
+  prompts = script
+
   if scene1 is None:
-    scene1 = len(script['scenes'])
+    scene1 = len(prompts)
 
-  for scene_i in tqdm.notebook.trange(scene0, scene1):
+  for prompt_i in tqdm.notebook.trange(scene0, scene1):
 
-    prompt = script['scenes'][scene_i]['writer']['text']
+    prompt = prompts[prompt_i]
     frames_number = 25 * 20
 
     os.makedirs(dest, exist_ok=True)
@@ -66,7 +73,7 @@ def render_script(
     wf['267:266']['inputs']['value'] = prompt
     wf['267:225']['inputs']['value'] = frames_number
 
-    dest_wf_path = os.path.join(dest, f'{name}__scene{scene_i:05}__{wf_name}.json')
+    dest_wf_path = os.path.join(dest, f'{name}__scene{prompt_i:05}__{wf_name}.json')
     with open(dest_wf_path, 'w') as f:
         json.dump(wf, f)
 
