@@ -52,7 +52,7 @@ def _plot(df):
   plt.show()
 
 
-def _get_row():
+def _get_row(gpu_index):
   num_files = len(glob.glob('runpod-slim/ComfyUI/output/video/*.mp4'))
 
   pynvml.nvmlInit()
@@ -71,12 +71,12 @@ def _get_row():
   )
 
 
-def loop(rows=()):
+def loop(rows=(), gpu_index=0):
   rows = list(rows)
   try:
     while True:
       disp.clear_output(wait=True)
-      rows.append(_get_row())
+      rows.append(_get_row(gpu_index))
       df = pd.DataFrame(rows)
       _plot(df)
       plt.show()
