@@ -11,11 +11,16 @@ def _runcmd(cmd, env):
   process = subprocess.Popen(
     cmd,
     env=env,
+    stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT,
     text=True,
     bufsize=1
   )
+
+  # Do you agree to enable tracking to improve the application? [y/N]:
+  process.stdin.write("\n")
+  process.stdin.flush()
 
   progress_area = ipywidgets.Output()
   IPython.display.display(progress_area)
