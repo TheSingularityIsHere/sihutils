@@ -56,6 +56,8 @@ def render_script(
     script = json.load(open(script))
     if 'scenes' in script:
       script = [scene['writer']['text'] for scene in script['scenes']]
+    elif 'variations' in script:
+      script = [variation['prompt'] for variation in script['variations']]
   assert isinstance(script, (list, tuple)) and all(isinstance(p, str) for p in script)
   prompts = script
 
