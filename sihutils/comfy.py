@@ -1,3 +1,4 @@
+import importlib.resources
 import json
 import os
 import subprocess
@@ -68,13 +69,10 @@ def render_script(
 
     os.makedirs(dest, exist_ok=True)
 
-    wf_path = os.path.join(
-      os.path.dirname(__file__),
-      # download "File / Export (API)"
-      'video_ltx2_3_t2v_api.json',
-    )
-    wf_name = os.path.splitext(os.path.basename(wf_path))[0]
-    wf = json.load(open(wf_path))
+    # download "File / Export (API)"
+    wf_filename = 'video_ltx2_3_t2v_api.json'
+    wf_name = os.path.splitext(wf_filename)[0]
+    wf = json.loads(importlib.resources.files('sihutils').joinpath(wf_filename).read_text())
 
     wf['267:266']['inputs']['value'] = prompt
     wf['267:225']['inputs']['value'] = frames_number

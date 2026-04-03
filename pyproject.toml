@@ -26,3 +26,6 @@ Repository = "https://github.com/TheSingularityIsHere/sihutils"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["sihutils*"]
+
+[tool.setuptools.package-data]
+sihutils = ["*.json"]
